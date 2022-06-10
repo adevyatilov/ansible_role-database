@@ -1,3 +1,63 @@
 ---
+# 
+# role database - postgresql
+# Перменные: 
+#  varсr_ (variable when calling the role) - перменные, которые передаются 
+#                                            при вызове роли
+#  def_ (define) - перменные определенные в файле defaults/main.yml
+#  varcr_db_name     - имя базы данных
+#  varcr_db_user     - имя хозяина базы данных
+#  varcr_db_password - пароль для пользователя базы данныx 
+  
+- name: установка пакетов
+  ansible.builtin.apt:
+    name: {{ item }}
+    update_cache: True
+    cache_valid_time: 3600
+  with_items:
+    - libpq-dev
+    - postgresql
+    - python-psycopg2
+  become: True
+  
 
+- name: копирование файлов настроки postgresql.conf, pg_hba.conf
+  ansible.builtin.copy:
+    src: "{{ item.file_name }}"
+    dest: /etc/postgresql/9.3/main/{{ item.file_name }}
+    owner: postgres
+    group: postgres
+    mode: "{{ item.mode }}"
+  with_items:
+    - {file_name: postgresql.conf, mode: 0644}
+    - {file_name: pg_hba.conf, mode: 0640}
+  become: True
+  notify: restart postgres
+
+
+- name: создание пользователя
+  ansible.builtin.postgresql_user:
+    name: "{{ varcr_db_user }}"
+    password: "{{ varcr_db_password }}"
+  become: True
+  become_user: postgres
+
+
+- name: создание БД
+  ansible.builtin.postgresql_db:
+    name: "{{ varcr_db_name }}"
+    owner: "{{ varcr_db_user }}"
+    encoding: UTF8
+    lc_ctype: "{{ varcr_locale }}"
+    lc_collate: "{{ varcr_locale }}"
+    template: template0
+    port: "{{ def_database_port }}"
+  become: True
+  become_user: postgres
+    
+    
+
+  
+    
+  
 
