@@ -7,7 +7,7 @@
 Переменные роли
 --------------
 
-  * ``varсr_`` (variable when calling the role) - перменные, которы передаются при вызове роли
+  * ``varсr_`` (variable when calling the role) - перменные, которыe передаются при вызове роли
   * ``def_`` (define) - перменные определенные в файле defaults/main.yml
   * ``varcr_db_name``     - имя базы данных 
   * ``varcr_db_user``     - имя пользователя базы данных
